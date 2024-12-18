@@ -27,7 +27,7 @@ class BiTImageCaptioningPipeline:
         self.caption_tensorizer = CaptionTensorizer(
             tokenizer=self.tokenizer, is_train=cfg.is_train
         )
-        self.feature_extractor = VinVLFeatureExtractor()
+        self.feature_extractor = VinVLFeatureExtractor(device=cfg.device)
         self.model = BertForImageCaptioning.from_pretrained(
             cfg.checkpoint, config=self.config
         )
