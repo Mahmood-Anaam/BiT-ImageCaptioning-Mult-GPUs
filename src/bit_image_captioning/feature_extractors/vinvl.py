@@ -14,7 +14,7 @@ class VinVLFeatureExtractor(VinVLVisualBackbone):
     Supports various input types (file path, URL, PIL.Image, numpy array, and torch.Tensor).
     """
     
-    def __init__(self, config_file=None, opts=None,add_od_labels=True):
+    def __init__(self, device=None ,config_file=None, opts=None,add_od_labels=True):
         """
         Initializes the VinVL Feature Extractor.
 
@@ -23,8 +23,9 @@ class VinVLFeatureExtractor(VinVLVisualBackbone):
             opts (dict, optional): Additional configuration options.
             add_od_labels (bool, optional): Whether to add object detection labels to input.
         """
-        super(VinVLFeatureExtractor, self).__init__(config_file, opts)
+        super(VinVLFeatureExtractor, self).__init__(device,config_file, opts)
         self.add_od_labels = add_od_labels
+        
         
 
     def _prepare_image(self, img):
