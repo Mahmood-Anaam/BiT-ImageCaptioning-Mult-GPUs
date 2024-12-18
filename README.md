@@ -60,7 +60,7 @@ from bit_image_captioning.datasets.ok_vqa_dataloader import OKVQADataLoader
 from bit_image_captioning.modeling.bert_config import BiTConfig
 
 # Extract image features
-feature_extractor = VinVLFeatureExtractor(add_od_labels=BiTConfig.add_od_labels)
+feature_extractor = VinVLFeatureExtractor(device=BiTConfig.device,add_od_labels=BiTConfig.add_od_labels)
 # img # (file path, URL, PIL.Image, numpy array, or tensor) 
 image_features = feature_extractor([img])
 # return List[dict]: List of extracted features for each image.
