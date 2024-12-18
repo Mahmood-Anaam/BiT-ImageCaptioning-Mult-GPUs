@@ -23,13 +23,14 @@ _LABEL_URL = "https://huggingface.co/michelecafagna26/vinvl_vg_x152c4/resolve/ma
 
 
 class VinVLVisualBackbone(object):
-    def __init__(self, config_file=None, opts=None):
-
+    def __init__(self,device=None,config_file=None, opts=None):
+        
         num_of_gpus = torch.cuda.device_count()
         set_seed(1000, num_of_gpus)
-        self.device = cfg.MODEL.DEVICE
-
+        
+        self.device = device if device : else 'cpu'
         self.opts = {
+            "MODEL.DEVICE":self.device,
             "MODEL.WEIGHT": "models/vinvl_vg_x152c4/vinvl_vg_x152c4.pth",
             "MODEL.ROI_HEADS.NMS_FILTER": 1,
             "MODEL.ROI_HEADS.SCORE_THRESH": 0.2,
