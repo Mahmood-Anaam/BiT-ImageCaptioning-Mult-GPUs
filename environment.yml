@@ -225,4 +225,4 @@ dependencies:
       - xxhash==3.5.0
       - yacs==0.1.8
       - yarl==1.9.4
-prefix: C:\Users\engma\anaconda3\envs\sg_benchmark
+#prefix: C:\Users\engma\anaconda3\envs\sg_benchmark
