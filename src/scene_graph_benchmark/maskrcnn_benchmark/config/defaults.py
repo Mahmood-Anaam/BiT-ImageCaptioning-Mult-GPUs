@@ -3,7 +3,7 @@
 import os
 
 from yacs.config import CfgNode as CN
-import torch
+
 
 # -----------------------------------------------------------------------------
 # Convention about Training / Test specific parameters
@@ -26,7 +26,7 @@ _C.MODEL.RPN_ONLY = False
 _C.MODEL.MASK_ON = False
 _C.MODEL.RETINANET_ON = False
 _C.MODEL.KEYPOINT_ON = False
-_C.MODEL.DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+_C.MODEL.DEVICE = "cpu"
 _C.MODEL.META_ARCHITECTURE = "GeneralizedRCNN"
 _C.MODEL.CLS_AGNOSTIC_BBOX_REG = False
 
