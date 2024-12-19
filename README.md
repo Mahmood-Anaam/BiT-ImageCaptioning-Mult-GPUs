@@ -52,24 +52,28 @@ python setup.py build develop
 ## Quick Start
 
 ```python
-
+import torch
 from bit_image_captioning.feature_extractors.vinvl import VinVLFeatureExtractor
 from bit_image_captioning.pipelines.bert_pipeline import BiTImageCaptioningPipeline
 from bit_image_captioning.datasets.ok_vqa_dataset import OKVQADataset
 from bit_image_captioning.datasets.ok_vqa_dataloader import OKVQADataLoader
 from bit_image_captioning.modeling.bert_config import BiTConfig
 
+
+# Config
+cfg = BiTConfig
+cfg.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+cfg.add_od_labels = True
+
 # Extract image features
-feature_extractor = VinVLFeatureExtractor(device=BiTConfig.device,add_od_labels=BiTConfig.add_od_labels)
+feature_extractor = VinVLFeatureExtractor(device=cfg.device,add_od_labels=cfg.add_od_labels)
 # img # (file path, URL, PIL.Image, numpy array, or tensor) 
 image_features = feature_extractor([img])
 # return List[dict]: List of extracted features for each image.
 # [{"boxes","classes","scores","img_feats","od_labels","spatial_features"},]
 
-
 # Generate a caption
-
-pipeline = BiTImageCaptioningPipeline(BiTConfig)
+pipeline = BiTImageCaptioningPipeline(cfg)
 features,captions = pipeline([img])
 print("Generated Caption:", caption)
 ```
