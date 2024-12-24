@@ -24,7 +24,7 @@ _LABEL_URL = "https://huggingface.co/michelecafagna26/vinvl_vg_x152c4/resolve/ma
 
 class VinVLVisualBackbone(object):
     def __init__(self,device='cpu',config_file=None, opts=None):
-        self.device = device if device : else 'cpu' 
+        self.device = device if device else 'cpu' 
         if self.device != 'cpu':
             num_of_gpus = torch.cuda.device_count()
             set_seed(1000, num_of_gpus)
