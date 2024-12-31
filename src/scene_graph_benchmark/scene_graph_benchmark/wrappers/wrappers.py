@@ -14,7 +14,7 @@ from pathlib import Path
 import requests
 from tqdm import tqdm
 
-BASE_PATH = Path("/content/BiT-ImageCaptioning-Mult-GPUs/src")
+BASE_PATH = Path("/content/BiT-ImageCaptioning-Mult-GPUs/src/scene_graph_benchmark")
 CONFIG_FILE = Path(BASE_PATH, 'sgg_configs/vgattr/vinvl_x152c4.yaml')
 
 MODEL_DIR = Path(BASE_PATH, "models/vinvl_vg_x152c4")
