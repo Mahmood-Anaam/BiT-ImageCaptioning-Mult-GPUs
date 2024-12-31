@@ -66,6 +66,26 @@ setup(
     license="MIT",
     ext_modules=get_extensions(),
     cmdclass={"build_ext": torch.utils.cpp_extension.BuildExtension},
+    setup__requires=["torch>=2.5.0","torchvision>=0.20.0"],
+    install_requires=[
+        "yacs",
+        "clint",
+        "numpy",
+        "opencv-python",
+        "tqdm",
+        "anytree",
+        "timm",
+        "einops",
+        "PyYAML",
+        "cython>=0.29",
+        "ninja>=1.10.0",
+    ],
+    package_data={
+        "scene_graph_benchmark": [
+            os.path.join("sgg_configs", "vgattr", "*.yaml"),
+            os.path.join("pretrained_model", "vinvl_vg_x152c4", "*"),
+        ]
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
