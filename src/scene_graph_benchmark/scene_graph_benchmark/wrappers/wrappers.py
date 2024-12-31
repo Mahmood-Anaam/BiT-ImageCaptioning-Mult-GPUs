@@ -14,10 +14,10 @@ from pathlib import Path
 import requests
 from tqdm import tqdm
 
-BASE_PATH = Path("/content/BiT-ImageCaptioning-Mult-GPUs/src/scene_graph_benchmark")
-CONFIG_FILE = Path(BASE_PATH, 'sgg_configs/vgattr/vinvl_x152c4.yaml')
+BASE_PATH = Path(__file__).resolve().parent.parent.parent
+CONFIG_FILE = BASE_PATH.joinpath('sgg_configs', 'vgattr', 'vinvl_x152c4.yaml')
 
-MODEL_DIR = Path(BASE_PATH, "models/vinvl_vg_x152c4")
+MODEL_DIR = BASE_PATH.joinpath("pretrained_model", "vinvl_vg_x152c4")
 _MODEL_URL = "https://huggingface.co/michelecafagna26/vinvl_vg_x152c4/resolve/main/vinvl_vg_x152c4.pth"
 _LABEL_URL = "https://huggingface.co/michelecafagna26/vinvl_vg_x152c4/resolve/main/VG-SGG-dicts-vgoi6-clipped.json"
 
@@ -34,11 +34,11 @@ class VinVLVisualBackbone(object):
         
         self.opts = {
             "MODEL.DEVICE":self.device,
-            "MODEL.WEIGHT": "models/vinvl_vg_x152c4/vinvl_vg_x152c4.pth",
+            "MODEL.WEIGHT": str(MODEL_DIR.joinpath("vinvl_vg_x152c4.pth")),
             "MODEL.ROI_HEADS.NMS_FILTER": 1,
             "MODEL.ROI_HEADS.SCORE_THRESH": 0.2,
             "TEST.IGNORE_BOX_REGRESSION": False,
-            "DATASETS.LABELMAP_FILE": "models/vinvl_vg_x152c4/VG-SGG-dicts-vgoi6-clipped.json",
+            "DATASETS.LABELMAP_FILE": str(MODEL_DIR.joinpath("VG-SGG-dicts-vgoi6-clipped.json")),
             "TEST.OUTPUT_FEATURE": True
         }
         if opts:
@@ -66,33 +66,23 @@ class VinVLVisualBackbone(object):
         self.model.eval()
         self.model.to(self.device)
 
-        if not Path(Path(BASE_PATH, cfg.MODEL.WEIGHT)).is_file():
-            MODEL_DIR.mkdir(parents=True, exist_ok=True)
-            
-            # download the model
-            r = requests.get(_MODEL_URL, stream=True)
-            path = Path(MODEL_DIR, Path(_MODEL_URL).name)
-            with open(path, 'wb') as f:
-                total_length = int(r.headers.get('content-length'))
-                for chunk in tqdm(r.iter_content(chunk_size=1024), total=(total_length / 1024) + 1,desc=f"downloading {Path(_MODEL_URL).name}"):
-                    if chunk:
-                        f.write(chunk)
-                        f.flush()
+        model_path = MODEL_DIR.joinpath("vinvl_vg_x152c4.pth")
+        label_path = MODEL_DIR.joinpath("VG-SGG-dicts-vgoi6-clipped.json")
 
-            # dowload the labelmap
-            r = requests.get(_LABEL_URL, stream=True)
-            path = Path(MODEL_DIR, Path(_LABEL_URL).name)
-            with open(path, 'wb') as f:
-                total_length = int(r.headers.get('content-length'))
-                for chunk in tqdm(r.iter_content(chunk_size=1024), total=(total_length / 1024) + 1,desc=f"downloading {Path(_LABEL_URL).name}"):
-                    if chunk:
-                        f.write(chunk)
-                        f.flush()
+        if not model_path.is_file():
+            MODEL_DIR.mkdir(parents=True, exist_ok=True)
+            self._download_file(_MODEL_URL, model_path)
+        if not label_path.is_file():
+            self._download_file(_LABEL_URL, label_path)
+            
+           
+
+           
 
         self.checkpointer = DetectronCheckpointer(cfg, self.model, save_dir="")
-        self.checkpointer.load(str(Path(BASE_PATH, cfg.MODEL.WEIGHT)))
+        self.checkpointer.load(str(model_path))
 
-        with open(Path(BASE_PATH, cfg.DATASETS.LABELMAP_FILE), "rb") as fp:
+        with open(label_path, "rb") as fp:
             label_dict = json.load(fp)
 
         self.idx2label = {int(k): v for k, v in label_dict["idx_to_label"].items()}
@@ -100,6 +90,16 @@ class VinVLVisualBackbone(object):
 
         self.transforms = build_transforms(cfg, is_train=False)
 
+    
+    @staticmethod
+    def _download_file(url, destination):
+        response = requests.get(url, stream=True)
+        total_length = int(response.headers.get('content-length', 0))
+        with open(destination, 'wb') as f:
+            for chunk in tqdm(response.iter_content(chunk_size=1024),
+                              total=total_length // 1024, desc=f"Downloading {destination.name}"):
+                f.write(chunk)
+    
     def __call__(self, img):
 
         if isinstance(img, str):
