@@ -28,7 +28,8 @@ setup(
             "PyYAML",
             "cython>=0.29",
             "ninja>=1.10.0",
-             "pytorch_transformers",
+            "pytorch_transformers",
+            "datasets",
         ],
     classifiers=[
         "Programming Language :: Python :: 3",
